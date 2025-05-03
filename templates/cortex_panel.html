@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>1manarmy Ops Panel</title>
+  <style>
+    body { background:#000; color:#0f0; font-family:monospace; padding:20px; }
+    button { background:#0f0; color:#000; font-weight:bold; padding:10px 20px; margin:10px; border:none; cursor:pointer; }
+    #status { margin-top:20px; white-space:pre-wrap; background:#111; padding:10px; border-left:4px solid #0f0; }
+  </style>
+</head>
+<body>
+  <h2>🧠 1manarmy Command Panel</h2>
+  <button onclick="trigger('scan')">Run Scan</button>
+  <button onclick="trigger('voice')">Voice Cortex</button>
+  <button onclick="trigger('alerts')">Run Alert Engine</button>
+  <button onclick="trigger('memory')">Ask Memory</button>
+  <button onclick="speak()">Speak Line</button>
+
+  <div id="status">[🧠] Ready...</div>
+
+  <script>
+    async function trigger(endpoint) {
+      const res = await fetch('/' + endpoint, { method: 'POST' });
+      const data = await res.json();
+      document.getElementById('status').innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function speak() {
+      const msg = prompt("💬 Type something for Puttar to say:");
+      if (!msg) return;
+      const res = await fetch('/speak', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: msg })
+      });
+      const data = await res.json();
+      document.getElementById('status').innerText = "[🔊] " + data.spoken;
+    }
+  </script>
+</body>
+</html>

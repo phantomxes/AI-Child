@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 1man.army | CORTEX Panel</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #00ff99;
+      padding: 2rem;
+    }
+    button {
+      background: #00ff99;
+      border: none;
+      color: #000;
+      padding: 10px 20px;
+      margin: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .log {
+      white-space: pre-wrap;
+      background: #1a1a1a;
+      padding: 10px;
+      margin-top: 1rem;
+      border-left: 4px solid #00ff99;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 1man.army | CORTEX Command Panel</h1>
+
+  <button onclick="triggerScan()">🚀 Run Scan</button>
+  <button onclick="triggerAlert()">🚨 Check Alerts</button>
+  <button onclick="saySomething()">🎙 Speak</button>
+  <button onclick="loadMemory()">📋 Load Memory</button>
+
+  <div class="log" id="output">[🧠] System online.</div>
+
+  <script>
+    async function triggerScan() {
+      const res = await fetch('/scan', { method: 'POST' });
+      document.getElementById('output').innerText = '[✓] Scan started.';
+    }
+
+    async function triggerAlert() {
+      const res = await fetch('/alert');
+      document.getElementById('output').innerText = '[✓] Alert module triggered.';
+    }
+
+    async function saySomething() {
+      const msg = prompt("🗣 What should 1manarmy say?");
+      if (msg) {
+        await fetch('/speak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: msg })
+        });
+        document.getElementById('output').innerText = '[✓] Spoken: ' + msg;
+      }
+    }
+
+    async function loadMemory() {
+      const res = await fetch('/memory');
+      const data = await res.json();
+      const output = data.map(d => `🕓 ${d.timestamp}\n🔖 ${d.label}\n🧾 ${d.output_snippet.slice(0, 200)}...\n---`).join('\n');
+      document.getElementById('output').innerText = output;
+    }
+  </script>
+</body>
+</html>
